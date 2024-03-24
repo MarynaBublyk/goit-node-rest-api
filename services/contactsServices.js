@@ -16,29 +16,40 @@ export async function getContactById(contactId) {
   return contacts.find((contact) => contact.id === contactId) || null;
 }
 
-export async function addContact(name, email, phone) {
+export async function addContact({ name, email, phone }) {
   // ...код. Повертає об'єкт доданого контакту (з id).
   const contact = {
+    id: nanoid(),
     name,
     email,
     phone,
-    id: nanoid(),
   };
   const contacts = await listContacts();
   contacts.push(contact);
-  const data = JSON.stringify(contacts);
+  const data = JSON.stringify(contacts, null, 2);
   await writeFile(contactsPath, data);
   return contact;
 }
 
-export async function removeContact(contactId) {
+export async function removeContact(id) {
   // ...код. Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
   const contacts = await listContacts();
-  const index = contacts.findIndex((item) => item.id === contactId);
+  const index = contacts.findIndex((item) => item.id === id);
   if (index === -1) {
     return null;
   }
   const [removedContact] = contacts.splice(index, 1);
-  await writeFile(contactsPath, JSON.stringify(contacts));
+  await writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   return removedContact;
+}
+
+export async function updateContactById({ id, name, email, phone }) {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return null;
+  }
+  contacts[index] = { ...contacts[index], name, email, phone };
+  await writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  return contacts[index];
 }
