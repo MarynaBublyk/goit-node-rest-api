@@ -65,6 +65,8 @@ export const updateContact = async (req, res, next) => {
       ...req.body,
       id,
     });
+    const noField = Object.keys(req.body).length === 0;
+    if (noField) throw HttpError(400, "Body must have at least one field");
     if (!result) {
       throw HttpError(404, `Contacts with id=${id} not found`);
     }
