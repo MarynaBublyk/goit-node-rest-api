@@ -43,13 +43,13 @@ export async function removeContact(id) {
   return removedContact;
 }
 
-export async function updateContactById({ id, name, email, phone }) {
+export async function updateContactById(id, diff) {
   const contacts = await listContacts();
   const index = contacts.findIndex((item) => item.id === id);
   if (index === -1) {
     return null;
   }
-  contacts[index] = { ...contacts[index], name, email, phone };
+  contacts[index] = { ...contacts[index], ...diff };
   await writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   return contacts[index];
 }
